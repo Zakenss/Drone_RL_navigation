@@ -1,0 +1,102 @@
+# Training Configuration for Drone RL Navigation
+# University of the West of England - MSc Research Project
+
+environment:
+  # City boundaries (Bristol City Centre)
+  city_bounds:
+    x_min: -500
+    x_max: 500
+    y_min: -500
+    y_max: 500
+    z_min: 0
+    z_max: 150
+  
+  # Helicopter parameters
+  helicopter_speed: 15.0  # m/s (starting speed)
+  helicopter_altitude: 100.0  # meters
+  
+  # Weather settings
+  weather: "dry"  # dry or rain
+  rain_intensity: 0.0  # mm/hr
+  
+  # Safety parameters (UK CAA regulations)
+  altitude_limit: 120.0  # meters
+  safety_margin: 15.0  # meters
+  min_altitude: 10.0  # meters
+
+agent:
+  # PPO hyperparameters
+  algorithm: "PPO"
+  learning_rate: 3e-4
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_coef: 0.5
+  entropy_coef: 0.01
+  
+  # Network architecture
+  hidden_size: 256
+  lstm_layers: 2
+  
+  # Training parameters
+  batch_size: 64
+  ppo_epochs: 10
+  buffer_size: 2048
+  
+  # Curriculum learning stages
+  curriculum:
+    - stage: 1
+      helicopter_speed: 15.0
+      weather: dry
+      episodes: 400
+    - stage: 2
+      helicopter_speed: 25.0
+      weather: dry
+      episodes: 200
+    - stage: 3
+      helicopter_speed: 15.0
+      weather: rain
+      rain_intensity: 8.0
+      episodes: 200
+    - stage: 4
+      helicopter_speed: 25.0
+      weather: rain
+      rain_intensity: 8.0
+      episodes: 200
+
+training:
+  # General settings
+  total_episodes: 10000
+  max_steps_per_episode: 1000
+  eval_frequency: 100
+  save_frequency: 500
+  
+  # Output directories
+  model_dir: "models/"
+  log_dir: "logs/"
+  checkpoint_dir: "checkpoints/"
+
+database:
+  # Flight logging
+  path: "data/drone_flights.db"
+  backup_frequency: 1000
+  export_format: "csv"
+  
+  # Compliance tracking
+  track_violations: true
+  violation_types:
+    - safety_margin
+    - altitude_limit
+    - minimum_altitude
+
+simulation:
+  # Integration settings
+  unreal_engine: "4.27"
+  cesium_plugin: true
+  px4_integration: true
+  ros2_middleware: true
+  
+  # Real-time settings
+  control_frequency: 10  # Hz
+  sensor_frequency: 30  # Hz
+  physics_update_rate: 100  # Hz
