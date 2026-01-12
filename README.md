@@ -12,7 +12,7 @@ This repository contains the implementation of a reinforcement learning-based na
 - Integration with Unreal Engine 4.27 and PX4
 
 
-```bash
+bash
 # Install dependencies
 pip install -r requirements.txt
 
